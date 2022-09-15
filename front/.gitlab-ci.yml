@@ -1,0 +1,127 @@
+services:
+  - docker:dind
+
+cache:
+  paths:
+    - node-modules/
+
+stages:
+  - install
+  - test
+  - analyze
+  - build
+  - publish
+  - deploy
+
+install_dependencies:
+  image: node:14.15.0-alpine
+  stage: install
+  script:
+    - npm install
+  tags:
+    - gitlab-runner
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules
+  allow_failure: true
+
+coverage:
+  image: node:14.15.0-alpine
+  stage: test
+  script:
+    - npm run test
+  tags:
+    - gitlab-runner
+  artifacts:
+    reports:
+      junit: target/test-results/TESTS-results-jest.xml
+    paths:
+      - target/test-results
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules
+    policy: pull
+  allow_failure: true
+
+sonar-analyze:
+  stage: analyze
+  image: sonarsource/sonar-scanner-cli:latest
+  tags:
+    - gitlab-runner
+  script:
+    - sonar-scanner -Dsonar.host.url=$SONAR_HOST -Dsonar.login=$SONAR_TOKEN
+  allow_failure: true
+
+build_image:
+  image: node:14.15.0-alpine
+  stage: build
+  script:
+    - npm link @angular/cli@12.1.2
+    - npm run build
+  tags:
+    - gitlab-runner
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/target/classes/static
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules
+    policy: pull
+
+push-gitlab-registry:
+  image: docker:latest
+  stage: publish
+  tags:
+    - gitlab-runner
+  variables:
+    IMAGE: registry.gitlab.com/cabinet-medical-fao/cm_frontend:$CI_COMMIT_BRANCH
+  script:
+    - docker build -t $IMAGE .
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker push $IMAGE
+  only:
+    - sprint-2-front
+    - develop
+
+docker-deploy-sprint:
+  stage: deploy
+  image: docker:latest
+  tags:
+    - gitlab-runner
+  variables:
+    IMAGE: registry.gitlab.com/cabinet-medical-fao/cm_frontend:$CI_COMMIT_BRANCH
+  script:
+    - docker container ls -a | grep "cm_frontend:sprint-2-front" | awk '{print $1}' | xargs docker stop || sleep 3
+    - docker container ls -a  | grep "cm_frontend:sprint-2-front" | awk '{print $1}' | xargs docker rm || sleep 3
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker images $IMAGE | grep "cm_frontend_sprint-2-front" | awk '{print $3}' | xargs docker image rm -f || sleep 3
+    - docker container rm -f cm_frontend_sprint-2-front || true
+    - docker run -d -p 9500:80 --name cm_frontend_sprint-2-front $IMAGE
+  only:
+    - sprint-2-front
+
+docker-deploy-develop:
+  stage: deploy
+  image: docker:latest
+  tags:
+    - gitlab-runner
+  variables:
+    IMAGE: registry.gitlab.com/cabinet-medical-fao/cm_frontend:$CI_COMMIT_BRANCH
+  script:
+    - docker container ls -a | grep "cm_frontend:develop" | awk '{print $1}' | xargs docker stop || sleep 3
+    - docker container ls -a  | grep "cm_frontend:develop" | awk '{print $1}' | xargs docker rm || sleep 3
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker images $IMAGE | grep "cm_frontend:develop" | awk '{print $3}' | xargs docker image rm -f || sleep 3
+    - docker container rm -f cm_frontend:develop || true
+    - docker run -d -p 9400:80 --name cm_frontend:develop $IMAGE
+  only:
+    - develop
