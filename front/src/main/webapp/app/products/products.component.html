@@ -1,0 +1,61 @@
+<section class="menu section bd-container">
+    <span class="section-subtitle">Bienvenue</span>
+    <h2 class="section-title">Choisissez votre Pizza</h2>
+    <div class="cell-sm-10 cell-md-6 range range-xs-center range-md-left range-fix">
+
+        <h4 class="submenu1">&nbsp;PIZZA</h4> <span class="submenu2">Standard 30 Ø</span>
+    </div>
+    <div class="menu__container bd-grid">
+        <jhi-single-product-item [product] = 'p' *ngFor="let p of pizzaStandart" ></jhi-single-product-item>
+    </div>
+</section>
+<section class="menu section bd-container">
+    <div class="cell-sm-10 cell-md-6 range range-xs-center range-md-left range-fix">
+
+        <h4 class="submenu1">PIZZA FAMILIALE</h4> <span class="submenu2">40 Ø</span>
+    </div>
+
+    <div class="menu__container bd-grid">
+
+   
+        <jhi-single-product-item [product] = 'p' *ngFor="let p of pizzaFamiliale" ></jhi-single-product-item>
+
+
+    </div>
+
+
+</section>
+<section class="menu section bd-container">
+    <div class="cell-sm-10 cell-md-6 range range-xs-center range-md-left range-fix">
+
+        <h4 class="submenu1">MINI pizza</h4> <span class="submenu2">Carrée (6 mourceaux)</span>
+    </div>
+    <div class="menu__container bd-grid">
+        <jhi-single-product-item *ngFor="let p of pizzaMini" [product] = "p"  ></jhi-single-product-item>
+
+    </div>
+
+</section>
+<section class="menu section bd-container">
+    <h2 class="section-title">Choisissez vos Entrées </h2>
+    <div class="cell-sm-10 cell-md-6 range range-xs-center range-md-left range-fix">
+
+    </div>
+    <div class="menu__container bd-grid">
+        <jhi-single-product-item [product] = 'p' *ngFor="let p of entry" ></jhi-single-product-item>
+
+
+    </div>
+</section>
+
+<section class="menu section bd-container">
+    <h2 class="section-title">Choisissez vos Boissons </h2>
+    <div class="cell-sm-10 cell-md-6 range range-xs-center range-md-left range-fix">
+
+    </div>
+    <div class="menu__container bd-grid">
+        <jhi-single-product-item [product] = 'p' *ngFor="let p of drinks" ></jhi-single-product-item>
+
+        
+    </div>
+</section>

@@ -27,6 +27,18 @@
             </span>
           </a>
         </li>
+
+        <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a class="nav-link" routerLink="/products" (click)="collapseNavbar()">
+            <span>
+              <fa-icon icon="users"></fa-icon>
+              <span jhiTranslate="global.menu.products">Our products</span>
+            </span>
+          </a>
+        </li>
+
+
+      
         <!-- jhipster-needle-add-element-to-menu - JHipster will add new menu items here -->
         <li
           *ngSwitchCase="true"
@@ -142,7 +154,7 @@
             </span>
           </a>
           <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="account-menu">
-            <li *ngSwitchCase="true">
+            <li *ngSwitchCase="true" >
               <a
                 class="dropdown-item"
                 routerLink="account/settings"
@@ -192,7 +204,13 @@
             </li>
           </ul>
         </li>
+
+        <a class="nav-icon position-relative text-decoration-none pt-1" routerLink="/bucket">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="position-absolute top-1 left-100 translate-middle badge rounded-pill bg-transparent text-dark">{{getNbrBucket()}}</span>
+       </a>
       </ul>
     </div>
   </div>
 </nav>
+

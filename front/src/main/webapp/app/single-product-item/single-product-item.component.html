@@ -1,0 +1,18 @@
+<div class="">
+
+<div class="menu__content">
+    <div 
+    style="background-size: 100%;width: 130px;height: 130px;"
+    [style.background-image]="'url(../../content/images/'+product.image+')'"
+        alt="" class="menu__img"></div>
+    <h3 class="menu__name">{{product!.title}}</h3>
+    <span class="menu__detail">{{product!.description}}</span>
+    <span class="menu__preci">{{product!.price}} TND</span>
+    <a href="#" class="button menu__button"><i class='bx bx-cart-alt'></i></a>
+    <div class="row">
+        <button class="btn-dark w-50 text-white" (click)="addToBucket()">Add</button>
+        <button class="btn-warning w-50" [routerLink]="['/single', product.id]">Update</button>
+    </div>
+</div>
+
+</div>
